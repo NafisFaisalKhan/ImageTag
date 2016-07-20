@@ -1,6 +1,7 @@
 package com.navyas.android.tagimage;
 
 import android.app.IntentService;
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
@@ -23,6 +24,18 @@ public class ClarifaiService extends IntentService {
     private static Cursor c;
     private static int flag;
     private static String compare = "ipsum";
+    private ProgressDialog mProgress;
+
+    private boolean mRunning;
+
+    @Override
+    public void onCreate()
+    {
+        super.onCreate();
+        mRunning = false;
+
+    }
+
 
     public ClarifaiService(){
         super(ClarifaiService.class.getName());
@@ -105,6 +118,7 @@ public class ClarifaiService extends IntentService {
                     values.put(ClarifaiContract.DataEntry.COLUMN_TAG20, tagName[19]);
 
                     db.insert(ClarifaiContract.DataEntry.TABLE_NAME, null, values);
+
                 }
                 catch (Exception e){}
             }
@@ -112,8 +126,16 @@ public class ClarifaiService extends IntentService {
 
         }
         Log.e("Tag", "Service complete");
+            MainActivity.mProgress.setProgress(100);
+            MainActivity.mProgress.dismiss();
+
+
+
+
 
         }
+
+
 
     }
 
