@@ -1,22 +1,25 @@
-package com.navyas.android.tagimage;
+           package com.navyas.android.tagimage;
 
-import android.content.Intent;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.os.Bundle;
-import android.provider.MediaStore;
-import android.support.v7.app.AppCompatActivity;
-import android.view.Menu;
-import android.view.MenuItem;
-import android.view.View;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Toast;
+           import android.app.ActivityManager;
+           import android.app.ProgressDialog;
+           import android.content.Context;
+           import android.content.Intent;
+           import android.database.Cursor;
+           import android.database.sqlite.SQLiteDatabase;
+           import android.os.Bundle;
+           import android.provider.MediaStore;
+           import android.support.v7.app.AppCompatActivity;
+           import android.view.Menu;
+           import android.view.MenuItem;
+           import android.view.View;
+           import android.widget.Button;
+           import android.widget.EditText;
+           import android.widget.Toast;
 
-import java.io.File;
-import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
+           import java.io.File;
+           import java.io.Serializable;
+           import java.util.ArrayList;
+           import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
     public static List<String> string = new ArrayList<String>();
     private static List<String> grid = new ArrayList<>();
     public static int stop = 0;
+    public static ProgressDialog mProgress;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,6 +147,17 @@ public class MainActivity extends AppCompatActivity {
             stop = 0;
             Intent intent = new Intent(Intent.ACTION_SYNC, null, this, ClarifaiService.class);
             startService(intent);
+
+            if(isMyServiceRunning(ClarifaiService.class)) {
+                mProgress = new ProgressDialog(this);
+                mProgress.setMessage("Loading");
+                mProgress.setProgressStyle(ProgressDialog.STYLE_HORIZONTAL);
+                mProgress.setIndeterminate(true);
+                mProgress.setProgress(0);
+                mProgress.setCancelable(true);
+                mProgress.setCanceledOnTouchOutside(false);
+                mProgress.show();
+            }
             return true;
         }
 
@@ -152,6 +167,18 @@ public class MainActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
+
+    private boolean isMyServiceRunning(Class<?> serviceClass) {
+        ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+
 
 
 
